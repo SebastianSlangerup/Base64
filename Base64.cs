@@ -10,12 +10,14 @@ public class Base64
         int remainder = 0;
         foreach (var character in input)
         {
-            remainder = character >> 6;
+            // character 'M': 01001101
+            // 01001101 >> 2 = 010011
             shiftedCharacter = character >> 2;
         }
 
         char[] base64Array = Base64Chars.ToCharArray();
-        return base64Array[shiftedCharacter];
+        return base64Array[shiftedCharacter]; // 19th character = T
+        
     }
     
     public static string Decode(string input)

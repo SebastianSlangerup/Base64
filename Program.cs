@@ -4,7 +4,7 @@
     {
         public static void Main()
         {
-            char result = Base64.Encode("M");
+            string result = Base64.Encode("Manamune");
             
             Console.WriteLine(result);
         }

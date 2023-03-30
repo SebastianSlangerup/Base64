@@ -4,20 +4,59 @@ public class Base64
 {
     private const string Base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     
-    public static char Encode(string input)
+    public static string Encode(string input)
     {
-        int shiftedCharacter = 0;
-        int remainder = 0;
-        foreach (var character in input)
+        char[] letters = input.ToCharArray();
+
+        string fullBinaryInput = "";
+
+        foreach (char letter in letters)
         {
-            // character 'M': 01001101
-            // 01001101 >> 2 = 010011
-            shiftedCharacter = character >> 2;
+            string binaryLetter = Convert.ToString(letter, 2);
+
+            while (binaryLetter.Length < 8)
+            {
+                binaryLetter = "0" + binaryLetter;
+            }
+
+            fullBinaryInput += binaryLetter;
         }
 
-        char[] base64Array = Base64Chars.ToCharArray();
-        return base64Array[shiftedCharacter]; // 19th character = T
+        // ["011010", "000101", "101010"...]
+        string[] binarySextets = new string[input.Length * 2];
+        int iterator = 1;
+        string sextetString = ""; // "001010"
         
+        // Split the binary input into sextets (6 bits per group)
+        foreach (char binaryChar in fullBinaryInput)
+        {
+            sextetString += binaryChar;
+            if (iterator % 6 == 0)
+            {
+                binarySextets[iterator / 6 - 1] = sextetString;
+                // Start repopulating the sextet string
+                sextetString = "";
+            }
+
+            iterator++;
+        }
+
+        fullBinaryInput = "";
+        string resultingInput = "";
+        char[] base64Chars = Base64Chars.ToCharArray();
+        
+        foreach (var sextet in binarySextets)
+        {
+            if (sextet == null)
+            {
+                continue;
+            }
+            fullBinaryInput += sextet + " ";
+
+            resultingInput += base64Chars[Convert.ToInt16(sextet, 2)];
+        }
+
+        return resultingInput;
     }
     
     public static string Decode(string input)
